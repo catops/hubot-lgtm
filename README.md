@@ -10,7 +10,7 @@ Automatically merge pull requests after contributors have given the thumbs up.
 1. Add **hubot-lgtm** to your hubot's `external-scripts.json`.
 1. Create a GitHub account for your hubot if you haven't already.
 1. Create a [personal API token](https://github.com/blog/1509-personal-api-tokens) using your bot's GH account and store it as `HUBOT_LGTM_GITHUB_TOKEN`.
-1. If you use Slack or Mattermost, define `HUBOT_LGTM_GITHUB_ROOM` with the name of the room you'd like the bot to report to.
+1. If you use Slack or Mattermost, define `HUBOT_LGTM_NOTIFICATION_ROOM` with the name of the room you'd like the bot to report to.
 
 ## Usage
 

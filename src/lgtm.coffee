@@ -1,9 +1,9 @@
 # Description
-#   Automatically merge pull requests after maintainers have given the thumbs up
+#   Automatically merge pull requests after contributors have given the thumbs up.
 #
 # Configuration:
 #   HUBOT_LGTM_GITHUB_TOKEN - GitHub API key.
-#   HUBOT_LGTM_GITHUB_ROOM - Optional Slack/Mattermost room to notify of merges.
+#   HUBOT_LGTM_NOTIFICATION_ROOM - Optional Slack/Mattermost room to notify of merges.
 #   HUBOT_LGTM_INTERVAL - Optional # of seconds to check GitHub for approved PRs. Defaults to 60.
 #
 # Commands:
@@ -17,7 +17,7 @@ github = require 'github'
 regexEscape = require 'regex-escape'
 
 token = process.env.HUBOT_LGTM_GITHUB_TOKEN
-room = process.env.HUBOT_LGTM_GITHUB_ROOM
+room = process.env.HUBOT_LGTM_NOTIFICATION_ROOM
 approvals = process.env.HUBOT_LGTM_APPROVAL_MSGS || ":shipit:,:+1:,👍,LGTM"
 interval = process.env.HUBOT_LGTM_THRESHOLD || 60
 threshold = process.env.HUBOT_LGTM_THRESHOLD || 2
