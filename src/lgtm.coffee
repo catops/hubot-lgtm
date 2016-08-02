@@ -19,7 +19,7 @@ regexEscape = require 'regex-escape'
 token = process.env.HUBOT_LGTM_GITHUB_TOKEN
 room = process.env.HUBOT_LGTM_NOTIFICATION_ROOM
 approvals = process.env.HUBOT_LGTM_APPROVAL_MSGS || ":shipit:,:+1:,👍,LGTM"
-interval = process.env.HUBOT_LGTM_THRESHOLD || 60
+interval = process.env.HUBOT_LGTM_INTERVAL || 60
 threshold = process.env.HUBOT_LGTM_THRESHOLD || 2
 
 # Regexify the acceptable approval messages.
