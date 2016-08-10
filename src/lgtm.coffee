@@ -70,7 +70,7 @@ checkComments = (issue, res) ->
       github.pullRequests.merge issue, (err, response) ->
         if err or not response.merged
           ignoreList.push slug
-          notify res, "I tried to merge #{url} but failed. It might have a conflict. 😦"
+          notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦"
         else
           notify res, "I merged #{url}. Thanks for the review #{Object.keys(approvers).join(' and ')}! ✌︎"
 
