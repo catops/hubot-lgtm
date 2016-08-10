@@ -4,5 +4,8 @@ node_js:
   - 4
   - 5
 
+env:
+- HUBOT_LGTM_GITHUB_TOKEN=ABC123
+
 before_install:
   - npm install -g grunt-cli

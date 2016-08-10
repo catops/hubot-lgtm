@@ -5,6 +5,7 @@
 #   HUBOT_LGTM_GITHUB_TOKEN - GitHub API key.
 #   HUBOT_LGTM_NOTIFICATION_ROOM - Optional Slack/Mattermost room to notify of merges.
 #   HUBOT_LGTM_INTERVAL - Optional # of seconds to check GitHub for approved PRs. Defaults to 60.
+#   HUBOT_LGTM_DISABLE_MD - Set to `true` to disable the use of markdown in messages.
 #
 # Commands:
 #   hubot list your pull requests - returns list of pull requests hubot is monitoring
@@ -72,7 +73,10 @@ checkComments = (issue, res) ->
           ignoreList.push slug
           notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦"
         else
-          notify res, "I merged #{url}. Thanks for the review #{Object.keys(approvers).join(' and ')}! ✌︎"
+          if process.env.HUBOT_LGTM_DISABLE_MD
+            notify res, "I merged #{url}. Thanks for the review #{Object.keys(approvers).join(' and ')}! ✌︎"
+          else
+            notify res, "I merged [#{issue.repo}##{issue.number}](#{url}). Thanks for the [review](https://github.com/catops/hubot-lgtm#usage) #{Object.keys(approvers).join(' and ')}! ✌︎"
 
 notify = (res, msg) ->
   if res and /Response/.test res.constructor.name

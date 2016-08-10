@@ -49,7 +49,7 @@ describe 'lgtm', ->
       setTimeout(=>
         expect(@room.messages).to.eql [
           ['alice', '@hubot check your pull requests']
-          ['hubot', 'I merged https://github.com/fake-user2/fake-repo2/pull/666. Thanks for the review fake-user6 and fake-user7! ✌︎']
+          ['hubot', 'I merged [fake-repo2#666](https://github.com/fake-user2/fake-repo2/pull/666). Thanks for the [review](https://github.com/catops/hubot-lgtm#usage) fake-user6 and fake-user7! ✌︎']
         ]
         do done
       , 100)
