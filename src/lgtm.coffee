@@ -54,8 +54,6 @@ mergePullRequests = (res) ->
         repo: issue.repository.name
         number: issue.number
       slug = "#{issue.user}#{issue.repo}#{issue.number}"
-      # Abort if it's in the ignore list (meaning it has a conflict).
-      return if ignoreList.indexOf(slug) > -1
       checkComments issue, res
 
 checkComments = (issue, res) ->
@@ -65,13 +63,15 @@ checkComments = (issue, res) ->
   github.issues.getComments issue, (err, comments) ->
     comments.forEach (comment) ->
       body = comment.body.trim()
-      if approvals.test(body) && body.length < 20
+      if approvals.test(body) && body.length < 25
         approvers[comment.user.login] = true
     if Object.keys(approvers).length >= threshold
       github.pullRequests.merge issue, (err, response) ->
         if err or not response.merged
-          ignoreList.push slug
+          # Don't display a message if it *still* can't be merged. We don't want to spam the channel.
+          return if ignoreList.indexOf(slug) > -1
           notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦"
+          ignoreList.push slug
         else
           if process.env.HUBOT_LGTM_DISABLE_MD
             notify res, "I merged #{url}. Thanks for the review #{Object.keys(approvers).join(' and ')}! ✌︎"
