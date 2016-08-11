@@ -1,7 +1,7 @@
 {
   "name": "hubot-lgtm",
   "description": "Automatically merge pull requests after contributors have given the thumbs up",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Chris Contolini <contolini@users.noreply.github.com>",
   "license": "CC0",
   "keywords": [
