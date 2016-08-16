@@ -71,6 +71,7 @@ checkComments = (issue, res) ->
           # Don't display a message if it *still* can't be merged. We don't want to spam the channel.
           return if ignoreList.indexOf(slug) > -1
           notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦"
+          notify res, "I will keep trying to merge every minute until it is able to be merged."
           ignoreList.push slug
         else
           if process.env.HUBOT_LGTM_DISABLE_MD
