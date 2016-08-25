@@ -3,9 +3,10 @@
 #
 # Configuration:
 #   HUBOT_LGTM_GITHUB_TOKEN - GitHub API key.
-#   HUBOT_LGTM_NOTIFICATION_ROOM - Optional Slack/Mattermost room to notify of merges.
-#   HUBOT_LGTM_INTERVAL - Optional # of seconds to check GitHub for approved PRs. Defaults to 60.
-#   HUBOT_LGTM_DISABLE_MD - Set to `true` to disable the use of markdown in messages.
+#   HUBOT_LGTM_NOTIFICATION_ROOM - [optional] Slack/Mattermost room to notify of merges.
+#   HUBOT_LGTM_IGNORE_FAILURES - [optional] Set to `true` if you don't want to be notified about failed merge attempts.
+#   HUBOT_LGTM_INTERVAL - [optional] # of seconds to check GitHub for approved PRs. Defaults to 60.
+#   HUBOT_LGTM_DISABLE_MD - [optional] Set to `true` to disable the use of markdown in messages.
 #
 # Commands:
 #   hubot list your pull requests - returns list of pull requests hubot is monitoring
@@ -19,6 +20,7 @@ regexEscape = require 'regex-escape'
 
 token = process.env.HUBOT_LGTM_GITHUB_TOKEN
 room = process.env.HUBOT_LGTM_NOTIFICATION_ROOM
+ignoreFailures = process.env.HUBOT_LGTM_IGNORE_FAILURES
 approvals = process.env.HUBOT_LGTM_APPROVAL_MSGS || ":shipit:,:+1:,👍,LGTM"
 interval = process.env.HUBOT_LGTM_INTERVAL || 60
 threshold = process.env.HUBOT_LGTM_THRESHOLD || 2
@@ -68,10 +70,11 @@ checkComments = (issue, res) ->
     if Object.keys(approvers).length >= threshold
       github.pullRequests.merge issue, (err, response) ->
         if err or not response.merged
+          # Don't display a failure message if they've turned it off.
+          return if ignoreFailures
           # Don't display a message if it *still* can't be merged. We don't want to spam the channel.
           return if ignoreList.indexOf(slug) > -1
-          notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦"
-          notify res, "I will keep trying to merge every minute until it is able to be merged."
+          notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦 I'll try again later."
           ignoreList.push slug
         else
           if process.env.HUBOT_LGTM_DISABLE_MD

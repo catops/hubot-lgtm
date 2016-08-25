@@ -26,6 +26,8 @@ mergeMocks = [
   nock('https://api.github.com').put(/\/repos\/(.*)\/pulls\/(.*)\/merge/).query(true).reply(200, fixtures.mergeFailure)
 ]
 
+process.env.HUBOT_LGTM_GITHUB_TOKEN = "ABC123"
+
 describe 'lgtm', ->
 
   beforeEach ->
