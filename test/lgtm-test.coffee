@@ -14,11 +14,10 @@ issuesMocks = [
   nock('https://api.github.com').get('/issues').query(true).reply(200, fixtures.noIssues)
 ]
 
-commentsMocks = [
-  nock('https://api.github.com').get(/\/repos\/(.*)/).query(true).reply(200, fixtures.comments)
-  nock('https://api.github.com').get(/\/repos\/(.*)/).query(true).reply(200, fixtures.commentsShipIt)
-  nock('https://api.github.com').get(/\/repos\/(.*)/).query(true).reply(200, fixtures.longComments)
-  nock('https://api.github.com').get(/\/repos\/(.*)/).query(true).reply(200, fixtures.commentsShipIt)
+reviewsMocks = [
+  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviews)
+  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsShipIt)
+  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsShipIt)
 ]
 
 mergeMocks = [
@@ -50,8 +49,18 @@ describe 'lgtm', ->
     @room.user.say('alice', '@hubot check your pull requests').then =>
       setTimeout(=>
         expect(@room.messages).to.eql [
-          ['alice', '@hubot check your pull requests']
-          ['hubot', 'I merged [fake-repo2#666](https://github.com/fake-user2/fake-repo2/pull/666). Thanks for the [review](https://github.com/catops/hubot-lgtm#usage) fake-user6 and fake-user7! ✌︎']
+          [
+            'alice',
+            '@hubot check your pull requests'
+          ]
+          [
+            'hubot',
+            'I merged [fake-repo2#666](https://github.com/fake-user2/fake-repo2/pull/666). Thanks for the [review](https://github.com/catops/hubot-lgtm#usage) fake-user6 and fake-user7! ✌︎'
+          ]
+          [
+            'hubot',
+            'I tried to merge https://github.com/fake-user3/fake-repo3/pull/1234 but failed. It might have a conflict or failed a status check. 😦 I\'ll try again later.'
+          ]
         ]
         do done
       , 100)

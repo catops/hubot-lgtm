@@ -41,58 +41,38 @@ module.exports = {
     }
   ],
   noIssues: [],
-  comments: [
+  reviews: [
     {
       user: {
         login: "fake-user3"
       },
-      body: "I like food."
+      state: "APPROVED"
     },
     {
       user: {
         login: "fake-user4"
       },
-      body: ":shipit:"
+      state: "NOT APPROVED"
     }
   ],
-  commentsShipIt: [
+  reviewsShipIt: [
     {
       user: {
         login: "fake-user5"
       },
-      body: "I like metal."
+      state: "NOT APPROVED"
     },
     {
       user: {
         login: "fake-user6"
       },
-      body: ":shipit:"
+      state: "APPROVED"
     },
     {
       user: {
         login: "fake-user7"
       },
-      body: ":shipit:"
-    }
-  ],
-  longComments: [
-    {
-      user: {
-        login: "fake-user8"
-      },
-      body: "The snozzberries taste like snozzberries! :shipit:"
-    },
-    {
-      user: {
-        login: "fake-user9"
-      },
-      body: "Please review my comments in chat."
-    },
-    {
-      user: {
-        login: "fake-user10"
-      },
-      body: ":shipit:"
+      state: "APPROVED"
     }
   ],
   mergeSuccess: {

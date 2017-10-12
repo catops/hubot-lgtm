@@ -14,9 +14,9 @@ Automatically merge pull requests after contributors have given the thumbs up.
 
 ## Usage
 
-1. [Assign a pull request](https://help.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/) to your bot's GH user.
-1. Review the PR as you normally would. Once its good-to-go, post a comment consisting solely of 👍 (or `LGTM`, `:+1:` or `:shipit:`).
-1. After the PR has at least two approval comments from your team, the bot will merge it.
+1. Set your bot's GH user as a pull request's [assignee](https://help.github.com/articles/assigning-issues-and-pull-requests-to-other-github-users/).
+1. Set one or more human GH users as a pull request's [reviewer](https://help.github.com/articles/about-pull-request-reviews/).
+1. After at least one reviewer approves the PR and its [status checks](https://help.github.com/articles/enabling-required-status-checks/) pass, the bot will merge it.
 
 Your bot will check its assigned pull requests every 60 seconds.
 The polling interval can be changed by defining `HUBOT_LGTM_INTERVAL`.

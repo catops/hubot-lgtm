@@ -21,12 +21,8 @@ regexEscape = require 'regex-escape'
 token = process.env.HUBOT_LGTM_GITHUB_TOKEN
 room = process.env.HUBOT_LGTM_NOTIFICATION_ROOM
 ignoreFailures = process.env.HUBOT_LGTM_IGNORE_FAILURES
-approvals = process.env.HUBOT_LGTM_APPROVAL_MSGS || ":shipit:,:+1:,👍,LGTM"
 interval = process.env.HUBOT_LGTM_INTERVAL || 60
-threshold = process.env.HUBOT_LGTM_THRESHOLD || 2
-
-# Regexify the acceptable approval messages.
-approvals = new RegExp regexEscape(approvals).replace(/,/g,'|')
+threshold = process.env.HUBOT_LGTM_THRESHOLD || 1
 
 # Initialize GH API.
 github = new github version: "3.0.0", debug: false, headers: Accept: "application/vnd.github.moondragon+json"
@@ -36,7 +32,8 @@ ignoreList = []
 
 # List all pull requests assigned to the bot.
 listPullRequests = (res) ->
-  github.issues.getAll {}, (err, issues) ->
+  github.issues.getAll {}, (err, resp) ->
+    issues = resp.data
     return notify res, "No pull requests have been assigned to me." if not issues.length
     pullRequests = issues.map (issue) ->
       if issue.pull_request and issue.state is "open"
@@ -44,9 +41,10 @@ listPullRequests = (res) ->
     pullRequests = pullRequests.filter (pr) -> pr
     notify res, "I'm monitoring these pull requests:\n- #{pullRequests.join('\n- ')}"
 
-# Iterate assigned pull requests and merge those with 2 or more comment approvals.
+# Iterate assigned pull requests and merge approved ones.
 mergePullRequests = (res) ->
-  github.issues.getAll {}, (err, issues) ->
+  github.issues.getAll {}, (err, resp) ->
+    issues = resp.data
     return notify res, "No pull requests have been assigned to me." if not issues.length
     issues.forEach (issue) ->
       # Abort if it's closed or not a pull request.
@@ -56,20 +54,20 @@ mergePullRequests = (res) ->
         repo: issue.repository.name
         number: issue.number
       slug = "#{issue.user}#{issue.repo}#{issue.number}"
-      checkComments issue, res
+      checkReviews issue, res
 
-checkComments = (issue, res) ->
+checkReviews = (issue, res) ->
   url = "https://github.com/#{issue.user}/#{issue.repo}/pull/#{issue.number}"
   slug = "#{issue.user}#{issue.repo}#{issue.number}"
   approvers = {}
-  github.issues.getComments issue, (err, comments) ->
-    comments.forEach (comment) ->
-      body = comment.body.trim()
-      if approvals.test(body) && body.length < 25
-        approvers[comment.user.login] = true
+  github.pullRequests.getReviews { owner: issue.user, repo: issue.repo, number: issue.number }, (err, resp) ->
+    reviews = resp.data
+    reviews.forEach (review) ->
+      if review.state == 'APPROVED'
+        approvers[review.user.login] = true
     if Object.keys(approvers).length >= threshold
-      github.pullRequests.merge issue, (err, response) ->
-        if err or not response.merged
+      github.pullRequests.merge { owner: issue.user, repo: issue.repo, number: issue.number }, (err, resp) ->
+        if err or not resp.data.merged
           # Don't display a failure message if they've turned it off.
           return if ignoreFailures
           # Don't display a message if it *still* can't be merged. We don't want to spam the channel.
