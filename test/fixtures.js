@@ -41,12 +41,12 @@ module.exports = {
     }
   ],
   noIssues: [],
-  reviews: [
+  reviewsFail: [
     {
       user: {
         login: "fake-user3"
       },
-      state: "APPROVED"
+      state: "NOT APPROVED"
     },
     {
       user: {
@@ -55,7 +55,7 @@ module.exports = {
       state: "NOT APPROVED"
     }
   ],
-  reviewsShipIt: [
+  reviewsPass: [
     {
       user: {
         login: "fake-user5"

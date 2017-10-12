@@ -15,9 +15,9 @@ issuesMocks = [
 ]
 
 reviewsMocks = [
-  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviews)
-  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsShipIt)
-  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsShipIt)
+  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsFail)
+  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsPass)
+  nock('https://api.github.com').get(/\/repos\/(.*)\/pulls\/(.*)\/reviews/).query(true).reply(200, fixtures.reviewsPass)
 ]
 
 mergeMocks = [
