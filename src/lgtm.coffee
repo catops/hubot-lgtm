@@ -31,21 +31,21 @@ github = new github version: "3.0.0", debug: false, headers: Accept: "applicatio
 ignoreList = []
 
 # List all pull requests assigned to the bot.
-listPullRequests = (res) ->
+listPullRequests = (robot, res) ->
   github.issues.getAll {}, (err, resp) ->
     issues = resp.data
-    return notify res, "No pull requests have been assigned to me." if not issues.length
+    return notify robot, res, "No pull requests have been assigned to me." if not issues.length
     pullRequests = issues.map (issue) ->
       if issue.pull_request and issue.state is "open"
         return "https://github.com/#{issue.repository.owner.login}/#{issue.repository.name}/pull/#{issue.number}"
     pullRequests = pullRequests.filter (pr) -> pr
-    notify res, "I'm monitoring these pull requests:\n- #{pullRequests.join('\n- ')}"
+    notify robot, res, "I'm monitoring these pull requests:\n- #{pullRequests.join('\n- ')}"
 
 # Iterate assigned pull requests and merge approved ones.
-mergePullRequests = (res) ->
+mergePullRequests = (robot, res) ->
   github.issues.getAll {}, (err, resp) ->
     issues = resp.data
-    return notify res, "No pull requests have been assigned to me." if not issues.length
+    return notify robot, res, "No pull requests have been assigned to me." if not issues.length
     issues.forEach (issue) ->
       # Abort if it's closed or not a pull request.
       return if not issue.pull_request or issue.state != "open"
@@ -54,9 +54,9 @@ mergePullRequests = (res) ->
         repo: issue.repository.name
         number: issue.number
       slug = "#{issue.user}#{issue.repo}#{issue.number}"
-      checkReviews issue, res
+      checkReviews robot, issue, res
 
-checkReviews = (issue, res) ->
+checkReviews = (robot, issue, res) ->
   url = "https://github.com/#{issue.user}/#{issue.repo}/pull/#{issue.number}"
   slug = "#{issue.user}#{issue.repo}#{issue.number}"
   approvers = {}
@@ -72,15 +72,15 @@ checkReviews = (issue, res) ->
           return if ignoreFailures
           # Don't display a message if it *still* can't be merged. We don't want to spam the channel.
           return if ignoreList.indexOf(slug) > -1
-          notify res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦 I'll try again later."
+          notify robot, res, "I tried to merge #{url} but failed. It might have a conflict or failed a status check. 😦 I'll try again later."
           ignoreList.push slug
         else
           if process.env.HUBOT_LGTM_DISABLE_MD
-            notify res, "I merged #{url}. Thanks for the review #{Object.keys(approvers).join(' and ')}! ✌︎"
+            notify robot, res, "I merged #{url}. Thanks for the review #{Object.keys(approvers).join(' and ')}! ✌︎"
           else
-            notify res, "I merged [#{issue.repo}##{issue.number}](#{url}). Thanks for the [review](https://github.com/catops/hubot-lgtm#usage) #{Object.keys(approvers).join(' and ')}! ✌︎"
+            notify robot, res, "I merged [#{issue.repo}##{issue.number}](#{url}). Thanks for the [review](https://github.com/catops/hubot-lgtm#usage) #{Object.keys(approvers).join(' and ')}! ✌︎"
 
-notify = (res, msg) ->
+notify = (robot, res, msg) ->
   if res and /Response/.test res.constructor.name
     return res.send msg
   if room
@@ -92,14 +92,14 @@ module.exports = (robot) ->
   github.authenticate type: "oauth", token: token
 
   robot.respond /check (your )?(pull requests|prs?)/i, (res) ->
-    mergePullRequests res
+    mergePullRequests robot, res
 
   robot.respond /(show|list|what are) (your )?(pull requests|prs?)/i, (res) ->
-    listPullRequests res
+    listPullRequests robot, res
 
   # HUBOT_LGTM_INTERVAL is set to false, don't poll GH.
   return if not interval
 
   setInterval(=>
-    do mergePullRequests
+    mergePullRequests robot
   , interval * 1000)
